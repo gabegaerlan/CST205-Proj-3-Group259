@@ -42,7 +42,6 @@ class Window(QtWidgets.QWidget):
     
     def __init__(self):
         super().__init__()
-        # self.title = 'PyQt5 textbox - pythonspot.com'
         # self.left = 10
         # self.top = 10
         # self.width = 400
@@ -68,16 +67,16 @@ class Window(QtWidgets.QWidget):
         h_box.addStretch()
         
         v_box = QtWidgets.QVBoxLayout()
-        v_box.addWidget(myButton)
         v_box.addWidget(self.textbox)
         v_box.addWidget(self.textbox2)
+        v_box.addWidget(myButton)
         v_box.addWidget(self.progress)
         if(load1 == True & load2 == True):
             v_box.addWidget(self.label)
         v_box.addLayout(h_box)
         
         self.setLayout(v_box)
-        self.setWindowTitle('Conversation Check')
+        self.setWindowTitle('Conversation Check!')
         
         # create connection between signal (click) and slot (stuff in parens)
         myButton.clicked.connect(self.btn_click)
@@ -99,6 +98,10 @@ class Window(QtWidgets.QWidget):
             print(item['text'] if 'text' in item else item)
         load1 = True
         load2 = True
+        self.sw = Second_window()
+        self.hide()
+        self.sw.show()
+
         #print(r.status_code)
 
 # create application loop
