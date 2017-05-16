@@ -37,9 +37,15 @@ def equal1():
     print(r.status_code)
 
 def equal2():
-    # GET 5 TWEETS CONTAINING 'ZZZ'
+       f = open('twits.txt','a+')
     for item in api.request('search/tweets', {'q': 'zzz', 'count': 5}):
         print(item['text'] if 'text' in item else item)
+        try:
+            f.write(item['text'] if 'text' in item else item % '\n')
+        except Exception as e:
+            print ("failed to Save"),str(e)
+            time.sleep(5)
+    f.close()
 
 def equal3():
     # STREAM TWEETS FROM AROUND NYC
