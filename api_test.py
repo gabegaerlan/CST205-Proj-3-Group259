@@ -3,6 +3,8 @@ from datetime import datetime
 import sys
 from TwitterAPI import TwitterAPI, TwitterOAuth, TwitterRestPager
 import easygui
+from tkinter import *
+from tkinter.filedialog import askopenfilename
 
 TEST_NUMBER = 6
 
@@ -37,7 +39,7 @@ def equal1():
     print(r.status_code)
 
 def equal2():
-       f = open('twits.txt','a+')
+    f = open('twits.txt','a+')
     for item in api.request('search/tweets', {'q': 'zzz', 'count': 5}):
         print(item['text'] if 'text' in item else item)
         try:
@@ -59,7 +61,11 @@ def equal4():
         print(item['text'] if 'text' in item else item)
 
 def equal5():
-    file = open(IMAGE_PATH, 'rb')
+    root = Tk()
+    root.withdraw() # we don't want a full GUI, so keep the root window from appearing
+    root.filename = askopenfilename() # show an "Open" dialog box and return the path to the selected file
+    print(root.filename)
+    file = open(root.filename, 'rb')
     data = file.read()
     r = api.request('statuses/update_with_media',
                     {'status': TWEET_TEXT},
