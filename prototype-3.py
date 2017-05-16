@@ -1,4 +1,5 @@
 import sys
+import codecs
 from PyQt5.QtWidgets import *
 from TwitterAPI import TwitterAPI, TwitterOAuth, TwitterRestPager
 
@@ -9,9 +10,11 @@ access_token_secret= "omC5iblhvvPEhaIeIVCN4XDUGldd3ol1TcWY2MkrGNhdK"
 
 api = TwitterAPI(consumer_key, consumer_secret, access_token_key, access_token_secret)
 
+textboxValue = ' '
+first_user = ' '
+sec_user = ' '
+
 class Window(QWidget):
-    first_user = " "
-    sec_user = " "
     
     def __init__(self):
         super().__init__()
@@ -22,8 +25,8 @@ class Window(QWidget):
         self.lbl_intro = QLabel('Welcome!')
         self.lbl_enter_user1 = QLabel('First User:')
         self.lbl_enter_user2 = QLabel('Second User:')
-        self.txt_enter_user1 = QLineEdit()
-        self.txt_enter_user2 = QLineEdit()
+        self.txt_enter_user1 = QLineEdit('@')
+        self.txt_enter_user2 = QLineEdit('@')
         #self.cb_login = QCheckBox('Stay logged in?')
         self.btn_login = QPushButton('Check')
         
@@ -57,24 +60,21 @@ class Window(QWidget):
         
         self.btn_login.clicked.connect(self.btn_login_clk)
         
-        self.setWindowTitle('Login test')
+        self.setWindowTitle('Conversation Check')
         
         self.show()
     
     def btn_login_clk(self):
+        global textboxValue
         textboxValue = self.txt_enter_user1.text() + ' ' + self.txt_enter_user2.text()
-        for item in api.request('search/tweets', {'q': textboxValue, 'count': 5}):
-            convo = item['text'] if 'text' in item else item
-        print(convo)
         self.mw = MainWindow()
         self.hide()
         self.mw.show()
-
+            
 
     def clear_box(self):
-        self.txt_enter_username.clear()
-        self.txt_enter_password.clear()
-        self.txt_enter_username.setFocus()
+        self.txt_enter_user1.clear()
+        self.txt_enter_user2.clear()
 
 
 class MainWindow(Window):
@@ -85,38 +85,39 @@ class MainWindow(Window):
         self.init_ui()
     
     def init_ui(self):
-        self.lbl_intro = QLabel('Main Window')
-        self.lbl_user_logged = QLabel('Welcome')
-        self.lbl_append = QLabel('Write something')
-        self.txt_write_box = QLineEdit()
-        self.btn_append = QPushButton('Append')
-        self.btn_logout = QPushButton('Logout')
+        count_var = 0
+        TweetList = [0,1,2,3,4]
+        self.lbl_intro = QLabel('Tweets from: ' + textboxValue)
+        for item in api.request('search/tweets', {'q': textboxValue, 'count': 5}):
+            TweetList[count_var] = item['text'] if 'text' in item else item
+            count_var = count_var + 1
+            print(item['text'] if 'text' in item else item)
+        self.contents = QLabel(TweetList[0])
+        self.contents_ = QLabel(TweetList[1])
+        self.contents2 = QLabel(TweetList[2])
+        self.contents3 = QLabel(TweetList[3])
+        self.contents4 = QLabel(TweetList[4])
+        self.btn_exit = QPushButton('Exit')
         
         layout = QVBoxLayout()
         layout.addWidget(self.lbl_intro)
-        layout.addWidget(self.lbl_user_logged)
-        layout.addWidget(self.lbl_append)
-        layout.addWidget(self.txt_write_box)
-        layout.addWidget(self.btn_append)
-        layout.addWidget(self.btn_logout)
+        layout.addWidget(self.contents)
+        layout.addWidget(self.contents_)
+        layout.addWidget(self.contents2)
+        layout.addWidget(self.contents3)
+        layout.addWidget(self.contents4)
+        layout.addWidget(self.btn_exit)
         
         self.setLayout(layout)
         self.setWindowTitle('Main')
         
-        self.btn_append.clicked.connect(self.append_clk)
-        self.btn_logout.clicked.connect(self.logout_action)
+        self.btn_exit.clicked.connect(self.exit_action)
         
         self.show()
+
     
-    def append_clk(self):
-        textboxValue = self.txt_write_box.text()
-        for item in api.request('search/tweets', {'q': textboxValue, 'count': 5}):
-            print(item['text'] if 'text' in item else item)
-    
-    def logout_action(self):
+    def exit_action(self):
         self.close()
-        a_window.show()
-        a_window.clear_box()
 
 
 if __name__ == '__main__':
